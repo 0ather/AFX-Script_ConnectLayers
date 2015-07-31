@@ -1,17 +1,20 @@
 ﻿// Variables
-app.beginUndoGroup("monApp");
-var currentComp = app.project.activeItem,
-        checkExistingComp,
+var currentComp,
         time,
+        initOn,
         compWidth,
         compHeight,
         selectedLayers,
+        selectedFromLayer,
+        selectedToLayers,
         layersSize = [],
         layersPosition = [],
-        nullsPosition = [];
+        nullsPosition = [],
+        layersLabels = ["None", "Red", "Yellow", "Aqua", "Pink", "Lavender", "Peach", "Sea Foam", "Blue", "Green", "Purple", "Orange", "Brown", "Fuschia", "Cyan", "Sandstone", "Dark Green"],
+        imageLinkTypeFromOne = (new File($.fileName)).path + "/linkTypeFromOne.png",
+        imageLinkTypeAll = (new File($.fileName)).path + "/linkTypeAll.png";
 
  // Layers Size, Layers Position, Layers Anchor Position
- 
 function getLayersProperty(i) {
          layersSize[i] = selectedLayers[i].sourceRectAtTime(time, false);
          layersPosition[i] = selectedLayers[i].transform.position.value;
@@ -100,49 +103,149 @@ function lineFromOneToOther(i) {
 // Init
 
 function init() {
-    layersSize.length = 0;
-    layersPosition.length = 0;
-    nullsPosition.length = 0;
+app.beginUndoGroup("monApp");
+
+    currentComp = app.project.activeItem,
+    selectedLayers = currentComp.selectedLayers;
     
-    //if ( selectedLayers.length<2 ) {
-    //        alert("You have to select 2 layers");
-   // } else {
+    alert(selectedLayers);
+    
+    if (currentComp == null ) { initOn = 0; alert("You need a composition"); }
+    else if (selectedLayers == null || selectedLayers.length < 2) { initOn = 0; alert("You have to select at least 2 layers"); }
+    else {
+        initOn = 1,
+        layersSize.length = 0,
+        layersPosition.length = 0,
+        nullsPosition.length = 0,
+        time = currentComp.time,
+        compWidth = currentComp.width,
+        compHeight = currentComp.height;
+        
         for (i=0; i<selectedLayers.length; i++) {
             getLayersProperty(i);
             createNulls(i);
             createShapes(i);
-            //alert(selectedLayers[i].label);
-            
+                //alert(selectedLayers[i].label);
         };
-   // };
+    };
+app.endUndoGroup();
 };
 
+// --------------------
+// UI
 
 function myScript(thisObj){
     function myScript_buildUI(thisObj){
         var myPanel = (thisObj instanceof Panel) ? thisObj : new Window("palette", "My window name", undefined, {resizeable:true});
         
         res = "group{orientation:'column',\
-                    groupOne: Group{orientation:'column',\
-                        myButton: Button{text:'Button Visible Name'},\
-                        myCheckbox: Checkbox{},\
-                        myRadioButton: RadioButton{},\
-                        myDropDownList: DropDownList{properties:{items:['Item 1', 'Item 2', 'Item 3']}},\
-                        myProgressBar: Progressbar{value:50},\
+                    linkTypePanel: Panel{text:'Link type', orientation:'row',\
+                        linkTypeFromOne: IconButton{text:'linkTypeFromOne', image:'file:///"+imageLinkTypeFromOne+"'},\
+                        linkTypeAll: IconButton{text:'linkTypeAll', image:'file:///"+imageLinkTypeAll+"'},\
+                        myIconButton: IconButton{text:'IconButton', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
+                        myIconButton: IconButton{text:'IconButton', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
                     },\
-                    groupTwo: Group{orientation:'column',\
-                        myIconButton: IconButton{text:'IconButton', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
-                        myIconButton: IconButton{text:'IconButton', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
-                        myIconButton: IconButton{text:'IconButton', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
-                        myImage: Image{text:'Image', image:'file:///C:/AFX_Scripts/ScriptUI%20Panels/AED_Groups/AED_Isolate.png'},\
-                        myStaticText: StaticText{text:'my Static Text'},\
-                        myEditText: EditText{text:'my Edit Text'},\
-                        mySlider: Slider{text:'my Slider'},\
-                        myScrollBar: Scrollbar{text:'my Scrollbar'},\
+                    selectLayersPanel: Panel{text:'', orientation:'column',\
+                        fromGroup: Panel{text:'Connect FROM', orientation:'row',\
+                            fromSelectedButton: Button{text:'Selected Layer'},\
+                            orText: StaticText{text:'OR'},\
+                            fromColorsList: DropDownList{properties:{items:['']}, size:[100, 25]},\
+                            fromFeedback: StaticText{text:'0 selected layers'},\
+                        },\
+                        toGroup: Panel{text:'Connect TO', orientation:'row',\
+                            toSelectedButton: Button{text:'Selected Layer'},\
+                            orText2: StaticText{text:'OR'},\
+                            toColorsList: DropDownList{properties:{items:['']}, size:[100, 25]},\
+                            toFeedback: StaticText{text:'0 selected layers'},\
+                        },\
                     },\
                 }";
-        
+
         myPanel.grp = myPanel.add(res);
+        
+        //--------------------
+        //LINK TYPE PANEL
+        
+        //01
+        
+        //02
+        
+        //03
+        
+        //04
+        
+        //05
+        
+        
+        //--------------------
+        //SELECT LAYERS PANEL
+        
+        //CONNECT FROM
+        
+        //Add labels to dropdown fromColorsList
+        for (k=0;k<layersLabels.length;k++) {
+            myPanel.grp.selectLayersPanel.fromGroup.fromColorsList.add("item", layersLabels[k]);
+        };
+    
+        //Click fromSelectedButton
+        myPanel.grp.selectLayersPanel.fromGroup.fromSelectedButton.onClick = function() {
+            if ( currentComp.selectedLayers.length==0 || currentComp.selectedLayers.length>1 ) {
+                alert("Select one layer");
+            } else {
+                selectedFromLayer = currentComp.selectedLayers;
+                myPanel.grp.selectLayersPanel.fromGroup.fromFeedback.text = selectedFromLayer.length+" selected layer";
+            };
+        };
+        
+        //CONNECT TO
+
+        //Add labels to dropdown toColorsList
+        for (l=0;l<layersLabels.length;l++) {
+            myPanel.grp.selectLayersPanel.toGroup.toColorsList.add("item", layersLabels[l]);
+        };
+    
+        //Click toSelectedButton
+        myPanel.grp.selectLayersPanel.toGroup.toSelectedButton.onClick = function() {
+            if ( currentComp.selectedLayers.length==0 ) {
+                alert("Select one layer");
+            } else if ( currentComp.selectedLayers.length==1 ) {
+                selectedToLayer = currentComp.selectedLayers;
+                myPanel.grp.selectLayersPanel.toGroup.toFeedback.text = selectedToLayer.length+" selected layer";
+            } else {
+                selectedToLayer = currentComp.selectedLayers;
+                myPanel.grp.selectLayersPanel.toGroup.toFeedback.text = selectedToLayer.length+" selected layers";
+            };
+        };
+    
+      //--------------------
+      //GENERAL SETTINGS
+        
+      //First hide connections panels
+        myPanel.grp.selectLayersPanel.visible=false;
+    
+    //Setup panel sizing
+    //    myPanel.layout.layout(true);
+    //    myPanel.grp.minimumSize = myPanel.grp.size;
+        
+    //Make panel resizeable
+        myPanel.layout.resize();
+        myPanel.onResizing = myPanel.onResize = function(){this.layout.resize()};
+        
+    //--------------------
+    //CLICK
+    
+        myPanel.grp.linkTypePanel.linkTypeFromOne.onClick = function() {
+            init();
+            if (initOn==1) {
+                myPanel.grp.selectLayersPanel.visible=true;
+            };
+        };
+        myPanel.grp.linkTypePanel.linkTypeAll.onClick = function() {
+            init();
+            if (initOn==1) {
+                myPanel.grp.selectLayersPanel.visible=true;
+            };
+        };
         
         return myPanel;
     }
@@ -154,14 +257,4 @@ function myScript(thisObj){
     }
 }
 
-
-if (currentComp == null ) { alert("You need a composition"); } 
-else { 
-    time = currentComp.time,
-    compWidth = currentComp.width,
-    compHeight = currentComp.height;
-    selectedLayers = currentComp.selectedLayers;
-    init();
     myScript(this);
-}
-app.endUndoGroup();
