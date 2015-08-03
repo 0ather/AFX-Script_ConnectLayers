@@ -3,8 +3,8 @@ var currentComp,
         time,
         compWidth,
         compHeight,
-        selectedFromLayer,
-        selectedToLayers,
+        selectedFromLayer = [],
+        selectedToLayer = [],
         layersSize = [],
         layersPosition = [],
         nullsPosition = [],
@@ -16,13 +16,14 @@ var currentComp,
             imageLinkTypeAll: GUIimagesPath + "/linkTypeAll.png",
             imageLabels: [GUIimagesPath + "/label01.png", ]
         };
+    
 
  // Layers Size, Layers Position, Layers Anchor Position
 function getLayersProperty(i) {
          layersSize[i] = selectedLayers[i].sourceRectAtTime(time, false);
          layersPosition[i] = selectedLayers[i].transform.position.value;
  };
-
+/*
  // Align Anchor Point
 // MIDDLE MIDDLE
 function alignAnchorMM(i) { 
@@ -37,7 +38,7 @@ function alignAnchorMM(i) {
 
         layersPosition[i] = selectedLayers[i].transform.position.value;
 
-};
+};*/
 
 //Create Nulls
 function createNulls(i) {
@@ -103,8 +104,8 @@ function lineFromOneToOther(i) {
      
 };
  
+ 
 // Init
-
 function init() {
 app.beginUndoGroup("monApp");
 
@@ -113,6 +114,7 @@ app.beginUndoGroup("monApp");
     if (currentComp == null ) { alert("You need a composition"); }
 
     else {
+
         layersSize.length = 0,
         layersPosition.length = 0,
         nullsPosition.length = 0,
@@ -121,7 +123,7 @@ app.beginUndoGroup("monApp");
         time = currentComp.time,
         compWidth = currentComp.width,
         compHeight = currentComp.height;
-        
+       
         /*for (i=0; i<selectedLayers.length; i++) {
             getLayersProperty(i);
             createNulls(i);
@@ -139,7 +141,7 @@ app.endUndoGroup();
 function clickLinkTypeFromOne() {
     init();
     //SELECT LAYERS PANEL
-        
+
         //Add labels to dropdown ColorsList
         for (k=0;k<layersLabels.length;k++) {
             //FROM
@@ -158,6 +160,7 @@ function clickLinkTypeFromOne() {
                 myPanel.grp.selectLayersPanel.fromPanel.fromGroup1.fromColorsList.selection = 0;
                 selectedFromLayer = currentComp.selectedLayers;
                 myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedback.text = selectedFromLayer.length+" selected layer";
+                myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.visible = true;
             };
         };
 
@@ -169,6 +172,7 @@ function clickLinkTypeFromOne() {
                 myPanel.grp.selectLayersPanel.toPanel.toGroup1.toColorsList.selection = 0;
                 selectedToLayer = currentComp.selectedLayers;
                 myPanel.grp.selectLayersPanel.toPanel.toGroup2.toFeedback.text = currentComp.selectedLayers.length==1 ? selectedToLayer.length+" selected layer" : selectedToLayer.length+" selected layers";
+                myPanel.grp.selectLayersPanel.toPanel.toGroup2.visible = true;
             };
         };
     
@@ -181,7 +185,6 @@ function clickLinkTypeFromOne() {
             if ( myPanel.grp.selectLayersPanel.fromPanel.fromGroup1.fromColorsList.selection.index == 0 ) {
                 selectedFromLayer.length = 0;
                 myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedback.text = "0 selected layers";
-                myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedback.text.characters = 20;
             } else {
                 //Find layers with this label
                 for (a=1; a<currentComp.layers.length+1; a++) {
@@ -191,7 +194,8 @@ function clickLinkTypeFromOne() {
                         break;
                     } else if ( currentComp.layer(a).label+1 == myPanel.grp.selectLayersPanel.fromPanel.fromGroup1.fromColorsList.selection.index ) {
                         selectedFromLayer.push(currentComp.layer(a));
-                        myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedback.text = selectedFromLayer.length+" selected layer";                      
+                        myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedback.text = selectedFromLayer.length+" selected layer";
+                        myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.visible = true;
                     };
                 };
                 if (selectedFromLayer.length == 0) {
@@ -216,6 +220,7 @@ function clickLinkTypeFromOne() {
                     if ( currentComp.layer(b).label+1 == myPanel.grp.selectLayersPanel.toPanel.toGroup1.toColorsList.selection.index ) {
                         selectedToLayer.push(currentComp.layer(b));
                         myPanel.grp.selectLayersPanel.toPanel.toGroup2.toFeedback.text = selectedToLayer.length==1 ? selectedToLayer.length+" selected layer" : selectedToLayer.length+" selected layers";
+                        myPanel.grp.selectLayersPanel.toPanel.toGroup2.visible = true;
                     };
                 };
                 if (selectedToLayer.length == 0) {
@@ -224,7 +229,73 @@ function clickLinkTypeFromOne() {
                 };
             };
         };
+    
+        //Click fromFeedbackInfos
+        myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.fromFeedbackInfos.onClick = function() {
+            var infoWindow = new Window ("dialog", "Layers info", undefined, {resizeable:true});
+            infoWindow.maximumSize.height = 300;
+
+                infoMessage = "group{orientation:'column',\
+                                            infosPanel: Panel{text:'', orientation:'row',\
+                                                contentGroup: Group{alignment:['left', 'top'], alignChildren:'left', orientation:'column', margins:[5,5,15,5],\
+                                                },\
+                                                scrollGroup: Group{alignment:['right', 'top'], orientation:'column',\
+                                                    panelScrollBar: Scrollbar{text:'my scroll bar', value:0, size:[14, 245]},\
+                                                },\
+                                            },\
+                                        }";
+            
+            infoWindow.grp = infoWindow.add(infoMessage);
+            
+            //infoWindow.grp.infosPanel.contentGroup.add('statictext', undefined, 'Jean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01 \rJean Michel \rRobert \rLorem 01', {multiline: true, scrolling: true});
+            
+            for ( i=0; i<selectedFromLayer.length;i++ ) {
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"htrhtrhtrhtr'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"htr'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"hrhtrhtrhtr'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+                infoWindow.grp.infosPanel.contentGroup.add("statictext {text:'"+selectedFromLayer[i].name+"'}");
+            };
+        
+            if ( selectedFromLayer.length < 10 ) {
+                infoWindow.grp.infosPanel.scrollGroup.visible=false;
+            } else {
+                infoWindow.grp.infosPanel.scrollGroup.visible=true;
+            };
+          
+           infoWindow.show();
+           
+           //windowSelectedLayersInfos("Example", selectedFromLayer.name);
+           
+           
+        };
 };
+
+/***************************************************************
+    * WINDOW SELECTED LAYERS INFOS
+    * Display in a window the names of the selected layers
+*/
+
+function windowSelectedLayersInfos(title, input) {
+    var w = new Window ("dialog", title);
+    var list = w.add("edittext", undefined, input, {multiline: true, scrolling: true});
+    
+    // the list should not be taller than the maximum possible height of the window
+    list.maximumSize.height = w.maximumSize.height - 100;
+    list.minimumSize.width = 150;
+    w.add ("button", undefined, "Close", {name: "ok"});
+    w.show ();
+};
+
+/**
+    * WINDOW SCRIPT PALETTE
+    * Display the script as a palette and a panel
+*/
 
 function myScript(thisObj){
     function myScript_buildUI(thisObj){
@@ -246,6 +317,7 @@ function myScript(thisObj){
                                         },\
                                         fromGroup2: Group{text:'', orientation:'row',\
                                                 fromFeedback: StaticText{text:'', characters:12},\
+                                                fromFeedbackInfos: IconButton{text:'fromLayerInfos', size:[15,15]},\
                                         },\
                                 },\
                                 toPanel: Panel{text:'Connect TO',\
@@ -256,6 +328,7 @@ function myScript(thisObj){
                                         },\
                                         toGroup2: Group{text:'', orientation:'row', alignment:['center', 'center'], alignChildren:['center', 'center'],\
                                                 toFeedback: StaticText{text:'', characters:12},\
+                                                toFeedbackInfos: IconButton{text:'toLayerInfos', size:[15,15]},\
                                         },\
                                 },\
                         },\
@@ -268,6 +341,8 @@ function myScript(thisObj){
         
       //First hide connections panels
         myPanel.grp.selectLayersPanel.visible=false;
+        myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.visible=false;
+        myPanel.grp.selectLayersPanel.toPanel.toGroup2.visible=false;
     
     //Setup panel sizing
     //    myPanel.layout.layout(true);
@@ -283,6 +358,8 @@ function myScript(thisObj){
     //01
         myPanel.grp.linkTypePanel.linkTypeFromOne.onClick = function() {
             myPanel.grp.selectLayersPanel.visible=true;
+            myPanel.grp.selectLayersPanel.fromPanel.fromGroup2.visible=false;
+            myPanel.grp.selectLayersPanel.toPanel.toGroup2.visible=false;
             clickLinkTypeFromOne();
         };
     //02
