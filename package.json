@@ -1,0 +1,25 @@
+{
+  "name": "afx-script_connectlayers",
+  "version": "1.0.0",
+  "description": "README",
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-shell": "^0.4.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0ather/AFX-Script_ConnectLayers.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/0ather/AFX-Script_ConnectLayers/issues"
+  },
+  "homepage": "https://github.com/0ather/AFX-Script_ConnectLayers#readme"
+}
